@@ -1,0 +1,9 @@
+Package: com.wavestuff6.rotatelistener
+Name: Rotate Listener
+Depends: mobilesubstrate
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome MobileSubstrate tweak!
+Maintainer: Carlos Leal
+Author: Carlos Leal
+Section: Tweaks
