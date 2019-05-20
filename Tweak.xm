@@ -11,13 +11,7 @@
 -(void)unlock;
 @end
 
-@interface _UIStatusBarPersistentAnimationView : UIView
-@end
-
-@interface _UIStatusBarSignalView : _UIStatusBarPersistentAnimationView
-@end
-
-@interface _UIStatusBarWifiSignalView : _UIStatusBarSignalView
+@interface _UIStatusBarWifiSignalView : UIView
 @property (nonatomic, assign) BOOL isTappedOn;
 @property (nonatomic, assign) BOOL isWifiView;
 @property (nonatomic, retain) UITapGestureRecognizer *tapGesture;
@@ -25,16 +19,7 @@
 -(void)toggleRotation:(UITapGestureRecognizer *)sender;
 @end
 
-@interface _UIStatusBarWifiItem
-@property (copy) _UIStatusBarWifiSignalView* _signalView;
-@end
-
-/*
-@interface UITapGestureRecognizer
-@property (assign, nonatomic) unsigned long long numberOfTapsRequired;
--(id)initWithTarget:(id)target action(SEL)action;
-*/
-
+// Need CFNotificationCenter to get a reference to SBOrientationLockManager from anywhere not just SB
 extern "C" CFNotificationCenterRef CFNotificationCenterGetDistributedCenter(void);
 
 static void toggle(CFNotificationCenterRef center, void *oversever, CFStringRef name, const void *object, CFDictionaryRef userInfo)
@@ -73,7 +58,7 @@ static void toggle(CFNotificationCenterRef center, void *oversever, CFStringRef 
 	{
 		NSLog(@"***************Rotating***************");
 	}
-	// call toggle
+	// Send notification to CFNC to actually toggle using SBOrientationLockManager
 	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), // center
 		CFSTR("rotatelistener.gesture"), // name
 		NULL, // object
@@ -81,9 +66,9 @@ static void toggle(CFNotificationCenterRef center, void *oversever, CFStringRef 
 		true	// deliverImmediately?
 	);
 }
-
 %end
 
+// Add observer to SBOrientationLockManager to receive messages and toggle
 %hook SBOrientationLockManager
 -(SBOrientationLockManager*) init {
 	SBOrientationLockManager *orig = %orig;
@@ -98,13 +83,3 @@ static void toggle(CFNotificationCenterRef center, void *oversever, CFStringRef 
 }
 
 %end
-/*
-%hook _UIStatusBarWifiItem
--(_UIStatusBarWifiSignalView *) _signalView{
-	if (DEBUG ==1) NSLog(@"henloooo");
-	_UIStatusBarWifiSignalView *orig = %orig;
-	orig.isWifiView = YES;
-	return orig;
-}
-%end
-*/
