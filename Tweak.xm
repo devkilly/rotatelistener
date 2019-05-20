@@ -11,29 +11,11 @@
 -(void)unlock;
 @end
 
-@interface _UIStatusBarPersistentAnimationView : UIView
-@end
-
-@interface _UIStatusBarSignalView : _UIStatusBarPersistentAnimationView
-@end
-
-@interface _UIStatusBarWifiSignalView : _UIStatusBarSignalView
-@property (nonatomic, assign) BOOL isTappedOn;
-@property (nonatomic, assign) BOOL isWifiView;
+@interface _UIBatteryView : UIView
 @property (nonatomic, retain) UITapGestureRecognizer *tapGesture;
 -(void)didMoveToWindow;
 -(void)toggleRotation:(UITapGestureRecognizer *)sender;
 @end
-
-@interface _UIStatusBarWifiItem
-@property (copy) _UIStatusBarWifiSignalView* _signalView;
-@end
-
-/*
-@interface UITapGestureRecognizer
-@property (assign, nonatomic) unsigned long long numberOfTapsRequired;
--(id)initWithTarget:(id)target action(SEL)action;
-*/
 
 extern "C" CFNotificationCenterRef CFNotificationCenterGetDistributedCenter(void);
 
@@ -51,8 +33,7 @@ static void toggle(CFNotificationCenterRef center, void *oversever, CFStringRef 
 
 // SECTION: Tweak/Hooks
 
-%hook _UIStatusBarWifiSignalView
-%property (nonatomic, assign) BOOL isWifiView;
+%hook _UIBatteryView
 %property (nonatomic, retain) UITapGestureRecognizer *tapGesture;
 -(void)didMoveToWindow
 {
@@ -98,13 +79,3 @@ static void toggle(CFNotificationCenterRef center, void *oversever, CFStringRef 
 }
 
 %end
-/*
-%hook _UIStatusBarWifiItem
--(_UIStatusBarWifiSignalView *) _signalView{
-	if (DEBUG ==1) NSLog(@"henloooo");
-	_UIStatusBarWifiSignalView *orig = %orig;
-	orig.isWifiView = YES;
-	return orig;
-}
-%end
-*/
