@@ -17,9 +17,11 @@
 -(void)toggleRotation:(UITapGestureRecognizer *)sender;
 @end
 
+// Need CFNotificationCenter to get a reference to SBOrientationLockManager from anywhere not just SB
 extern "C" CFNotificationCenterRef CFNotificationCenterGetDistributedCenter(void);
 
-static void toggle(CFNotificationCenterRef center, void *oversever, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+static void toggle(CFNotificationCenterRef center, void *oversever, 
+	CFStringRef name, const void *object, CFDictionaryRef userInfo)
 {
 
 	if ([[%c(SBOrientationLockManager) sharedInstance] isUserLocked])
@@ -65,6 +67,7 @@ static void toggle(CFNotificationCenterRef center, void *oversever, CFStringRef 
 
 %end
 
+// Add observer to SBOrientationLockManager to receive messages and toggle
 %hook SBOrientationLockManager
 -(SBOrientationLockManager*) init {
 	SBOrientationLockManager *orig = %orig;
