@@ -13,6 +13,7 @@
 
 @interface _UIBatteryView : UIView
 @property (nonatomic, retain) UITapGestureRecognizer *tapGesture;
+@property (assign) BOOL isTapped;
 -(void)didMoveToWindow;
 -(void)toggleRotation:(UITapGestureRecognizer *)sender;
 @end
@@ -39,10 +40,11 @@ static void toggle(CFNotificationCenterRef center, void *oversever,
 %property (nonatomic, retain) UITapGestureRecognizer *tapGesture;
 -(void)didMoveToWindow
 {
+	self.isTapped = NO;
 	if(!self.tapGesture)
 	{
 		self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleRotation:)];
-		self.tapGesture.numberOfTapsRequired = 1;
+		self.tapGesture.numberOfTapsRequired = 2;
 		[self.tapGesture setCancelsTouchesInView: NO];
 		[self.superview.superview addGestureRecognizer:self.tapGesture];
 	}
@@ -56,13 +58,22 @@ static void toggle(CFNotificationCenterRef center, void *oversever,
 	{
 		NSLog(@"***************Rotating***************");
 	}
-	// call toggle
-	CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), // center
-		CFSTR("rotatelistener.gesture"), // name
-		NULL, // object
-		NULL, // userInfo
-		true	// deliverImmediately?
-	);
+
+	CGPoint touchLocation = [sender locationInView:sender.view];	// gets coordinates of touch input
+	CGRect rightStatusBarFrame = [self.superview.superview convertRect:self.superview.frame fromView:self.superview.superview]; // gets frame of only the uiview holding battery, wifi, signal 
+	// extend the frame to go all the way up to the top of the screen
+	rightStatusBarFrame = CGRectMake(rightStatusBarFrame.origin.x, 0, 
+		rightStatusBarFrame.size.width, rightStatusBarFrame.size.height + rightStatusBarFrame.origin.y);
+	if (CGRectContainsPoint(rightStatusBarFrame, touchLocation))
+	{
+		// call toggle
+		CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), // center
+			CFSTR("rotatelistener.gesture"), // name
+			NULL, // object
+			NULL, // userInfo
+			true	// deliverImmediately?
+		);
+	}
 }
 
 %end
