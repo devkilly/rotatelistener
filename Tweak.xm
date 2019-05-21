@@ -13,7 +13,6 @@
 
 @interface _UIBatteryView : UIView
 @property (nonatomic, retain) UITapGestureRecognizer *tapGesture;
-@property (assign) BOOL isTapped;
 -(void)didMoveToWindow;
 -(void)toggleRotation:(UITapGestureRecognizer *)sender;
 @end
@@ -40,7 +39,6 @@ static void toggle(CFNotificationCenterRef center, void *oversever,
 %property (nonatomic, retain) UITapGestureRecognizer *tapGesture;
 -(void)didMoveToWindow
 {
-	self.isTapped = NO;
 	if(!self.tapGesture)
 	{
 		self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleRotation:)];
